@@ -1,11 +1,17 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const generateCreativeGroupNames = async (
   groupsOfNames: string[][]
 ): Promise<string[]> => {
   try {
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) {
+      console.warn("Gemini API Key is missing. Skipping AI generation.");
+      return groupsOfNames.map((_, i) => `Team ${i + 1}`);
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
+
     const prompt = `
       I have divided people into ${groupsOfNames.length} teams.
       Here are the members for each team:
@@ -16,7 +22,7 @@ export const generateCreativeGroupNames = async (
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-1.5-flash',
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -31,7 +37,7 @@ export const generateCreativeGroupNames = async (
 
     const text = response.text;
     if (!text) return [];
-    
+
     return JSON.parse(text) as string[];
 
   } catch (error) {
