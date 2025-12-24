@@ -35,6 +35,7 @@ This project is configured to deploy to GitHub Pages using GitHub Actions.
 
 ## Project Structure
 
+
 - `src/`: Source code
   - `components/`: React components
   - `services/`: API services
